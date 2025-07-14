@@ -1,0 +1,114 @@
+Crie um sistema web imersivo e motivacional chamado "Ponto Dev", usando React com TailwindCSS, que simula com realismo a rotina de um desenvolvedor júnior contratado por uma empresa fictícia chamada TechFoco Inc.
+
+O objetivo é fazer com que eu (Gabriel) me sinta como um funcionário de verdade. O sistema deve reforçar disciplina, foco e rotina, me fazendo cumprir pelo menos 3 horas de estudo de programação por dia, todos os dias da semana.
+
+O sistema deve ter aparência e estrutura de um sistema interno real de uma empresa de tecnologia, com lógica de expediente, ponto, histórico e cobrança por ausência.
+
+🛠 Tecnologias obrigatórias:
+React (com estado via useState/useEffect)
+
+TailwindCSS para estilização
+
+LocalStorage para persistência de dados
+
+Pode ser usado em projetos do Vite, Next.js ou CRA (você escolhe)
+
+Interface responsiva (mobile-first)
+
+🎯 Funcionalidades principais:
+1. 🔐 Tela de Login Simbólica
+Campo de nome (padrão: “Gabriel”)
+
+Botão “Entrar no sistema”
+
+Após login, salva o nome no LocalStorage
+
+Frase motivacional:
+"Bem-vindo de volta, Gabriel. Pronto para mais um dia na TechFoco Inc.?"
+
+2. 📊 Dashboard de Funcionário
+Saudação + data atual
+
+Frases de incentivo rotativas
+
+Relógio em tempo real
+
+Status do expediente: "Você está em expediente?" ou "Hoje ainda não iniciou"
+
+⏱ Registro de Ponto (com múltiplas sessões por dia)
+Botão “Bater ponto de entrada”
+
+Registra horário de entrada atual
+
+Permite bater ponto múltiplas vezes no mesmo dia
+
+Botão “Bater ponto de saída”
+
+Registra horário de saída
+
+Calcula tempo da sessão e acumula no dia
+
+Botão “Encerrar expediente”
+
+Finaliza oficialmente o dia
+
+Mostra o total de horas estudadas
+
+Verifica se a meta de 3h foi atingida
+
+Feedback:
+
+✔️ “Meta cumprida: 3h05min! Excelente trabalho.”
+
+⚠️ “Meta não atingida: 1h45min. Recupere o ritmo amanhã.”
+
+📅 Justificativa de Faltas (obrigatório)
+Se nenhum expediente for encerrado até 23h59, ao acessar o sistema no dia seguinte:
+
+Detecta falta do dia anterior
+
+Exibe tela obrigatória para justificar ausência com um campo de texto
+
+Exemplo: “Gabriel, você não registrou expediente em 13/07. Justifique sua ausência abaixo.”
+
+Só libera o sistema após envio da justificativa
+
+Justificativas são salvas no histórico
+
+📈 Histórico semanal
+Lista ou gráfico com os últimos 7 dias
+
+Para cada dia, mostra:
+
+Tempo total estudado
+
+Status (✔️ Meta, ❌ Falta, ⚠️ Parcial)
+
+Justificativa (se houver)
+
+Barra de progresso ou gráfico de streak
+
+💅 Estilo e Experiência
+Layout com TailwindCSS
+
+Interface de painel administrativo / sistema interno
+
+Ícones modernos (clock, terminal, rocket, coffee)
+
+Cores corporativas
+
+Modo escuro automático (opcional)
+
+Sons leves ao bater ponto (opcional)
+
+💡 Extras opcionais:
+Selos ou conquistas simbólicas (ex: 7 dias seguidos, 10h em 1 semana)
+
+Alertas diários automáticos se o ponto ainda não foi iniciado até X hora
+
+Notificações sonoras ou visuais leves ao bater ponto ou encerrar
+
+📌 Resumo:
+Crie um sistema web chamado “Ponto Dev”, totalmente feito com React e TailwindCSS, que simula a experiência profissional de estar trabalhando como dev júnior numa empresa de verdade.
+O sistema deve controlar entrada e saída, exigir encerramento de expediente, cobrar justificativa em caso de falta, manter histórico semanal e reforçar diariamente o compromisso com a carreira.
+Todos os dados devem ser persistidos no LocalStorage.
