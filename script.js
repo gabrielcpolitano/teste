@@ -6,7 +6,6 @@ class PontoDevSystem {
         this.currentUser = null;
         this.currentSession = null;
         this.isWorkdayStarted = false;
-        this.database = new OnlineDatabase(); // Use online database
         this.motivationalMessages = [
             "Hoje é mais um dia para alcançar seus objetivos na TechFoco Inc.",
             "Sua dedicação hoje constrói o sucesso de amanhã.",
@@ -20,13 +19,9 @@ class PontoDevSystem {
         this.init();
     }
 
-    async init() {
+    init() {
         this.setupEventListeners();
         this.updateClock();
-        
-        // Wait for database to initialize
-        await this.database.init();
-        
         this.checkForAbsences();
         this.loadUserData();
         
@@ -34,12 +29,6 @@ class PontoDevSystem {
         if (typeof feather !== 'undefined') {
             feather.replace();
         }
-        
-        // Make system available globally for database callbacks
-        window.pontoDevSystem = this;
-        
-        // Update database status indicator
-        setTimeout(() => this.updateDatabaseStatus(), 1000);
     }
 
     setupEventListeners() {
@@ -104,14 +93,14 @@ class PontoDevSystem {
         welcomeMsg.classList.add('animate-fade-in');
         
         // Switch to dashboard after delay
-        setTimeout(async () => {
+        setTimeout(() => {
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('dashboard').classList.remove('hidden');
-            await this.updateDashboard();
+            this.updateDashboard();
         }, 2000);
     }
 
-    async updateDashboard() {
+    updateDashboard() {
         // Update user name
         document.getElementById('employeeNameDisplay').textContent = this.currentUser;
         
@@ -133,10 +122,10 @@ class PontoDevSystem {
         this.updateWorkStatus();
         
         // Load today's data
-        await this.loadTodaysData();
+        this.loadTodaysData();
         
         // Update weekly history
-        await this.updateWeeklyHistory();
+        this.updateWeeklyHistory();
     }
 
     updateWorkStatus() {
@@ -154,7 +143,7 @@ class PontoDevSystem {
         }
     }
 
-    async clockIn() {
+    clockIn() {
         if (this.currentSession) {
             this.showMessage('Você já está em uma sessão ativa!', 'error');
             return;
@@ -171,14 +160,14 @@ class PontoDevSystem {
         document.getElementById('clockOutBtn').disabled = false;
         
         this.updateWorkStatus();
-        await this.updateSessionsDisplay();
+        this.updateSessionsDisplay();
         this.showMessage('Ponto de entrada registrado com sucesso!', 'success');
         
         // Play sound effect (optional)
         this.playSound('clockIn');
     }
 
-    async clockOut() {
+    clockOut() {
         if (!this.currentSession) {
             this.showMessage('Nenhuma sessão ativa para encerrar!', 'error');
             return;
@@ -188,7 +177,7 @@ class PontoDevSystem {
         const startTime = new Date(this.currentSession.startTime);
         const duration = now - startTime;
         
-        // Save session to database
+        // Save session to localStorage
         const session = {
             ...this.currentSession,
             endTime: now.toISOString(),
@@ -197,7 +186,7 @@ class PontoDevSystem {
             durationDisplay: this.formatDuration(duration)
         };
         
-        await this.saveTodaysSession(session);
+        this.saveTodaysSession(session);
         this.currentSession = null;
         
         // Update button states
@@ -205,30 +194,27 @@ class PontoDevSystem {
         document.getElementById('clockOutBtn').disabled = true;
         
         this.updateWorkStatus();
-        await this.updateSessionsDisplay();
+        this.updateSessionsDisplay();
         this.showMessage('Ponto de saída registrado com sucesso!', 'success');
         
         // Play sound effect (optional)
         this.playSound('clockOut');
     }
 
-    async endWorkday() {
-        const todayData = await this.getTodaysData();
+    endWorkday() {
+        const todayData = this.getTodaysData();
         const totalTime = this.calculateTotalTime(todayData.sessions);
         const targetTime = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
         
         // Force clock out if session is active
         if (this.currentSession) {
-            await this.clockOut();
+            this.clockOut();
         }
         
         // Save workday as completed
-        const workdayData = {
-            workdayCompleted: true,
-            completedAt: new Date().toISOString()
-        };
-        
-        await this.saveTodaysData(workdayData);
+        todayData.workdayCompleted = true;
+        todayData.completedAt = new Date().toISOString();
+        this.saveTodaysData(todayData);
         
         // Show final message
         const totalTimeFormatted = this.formatDuration(totalTime);
@@ -247,15 +233,15 @@ class PontoDevSystem {
         // Reset for next day
         this.isWorkdayStarted = false;
         this.updateWorkStatus();
-        await this.updateWeeklyHistory();
+        this.updateWeeklyHistory();
     }
 
-    async checkForAbsences() {
+    checkForAbsences() {
         const yesterday = new Date();
         yesterday.setDate(yesterday.getDate() - 1);
         const yesterdayKey = this.getDateKey(yesterday);
         
-        const yesterdayData = await this.getDateData(yesterdayKey);
+        const yesterdayData = this.getDateData(yesterdayKey);
         
         if (!yesterdayData.workdayCompleted && !yesterdayData.justification) {
             this.showAbsenceModal(yesterday);
@@ -276,7 +262,7 @@ class PontoDevSystem {
         this.pendingJustificationDate = date;
     }
 
-    async submitJustification() {
+    submitJustification() {
         const justificationText = document.getElementById('absenceJustification').value.trim();
         
         if (!justificationText) {
@@ -284,26 +270,31 @@ class PontoDevSystem {
             return;
         }
         
-        const userId = this.currentUser || 'Gabriel';
-        await this.database.saveJustification(userId, this.pendingJustificationDate, justificationText);
+        const dateKey = this.getDateKey(this.pendingJustificationDate);
+        const dateData = this.getDateData(dateKey);
+        
+        dateData.justification = justificationText;
+        dateData.justificationDate = new Date().toISOString();
+        
+        this.saveDateData(dateKey, dateData);
         
         // Hide modal
         document.getElementById('absenceModal').classList.add('hidden');
         document.getElementById('absenceJustification').value = '';
         
         this.showMessage('Justificativa enviada com sucesso!', 'success');
-        await this.updateWeeklyHistory();
+        this.updateWeeklyHistory();
     }
 
-    async loadTodaysData() {
-        const todayData = await this.getTodaysData();
-        await this.updateSessionsDisplay();
-        await this.updateDailyTotal();
+    loadTodaysData() {
+        const todayData = this.getTodaysData();
+        this.updateSessionsDisplay();
+        this.updateDailyTotal();
     }
 
-    async updateSessionsDisplay() {
+    updateSessionsDisplay() {
         const sessionsContainer = document.getElementById('dailySessions');
-        const todayData = await this.getTodaysData();
+        const todayData = this.getTodaysData();
         
         if (todayData.sessions.length === 0 && !this.currentSession) {
             sessionsContainer.innerHTML = '<p class="text-gray-400 text-center py-4">Nenhuma sessão registrada hoje</p>';
@@ -360,8 +351,8 @@ class PontoDevSystem {
         }
     }
 
-    async updateDailyTotal() {
-        const todayData = await this.getTodaysData();
+    updateDailyTotal() {
+        const todayData = this.getTodaysData();
         let totalTime = this.calculateTotalTime(todayData.sessions);
         
         // Add current session time if active
@@ -377,23 +368,25 @@ class PontoDevSystem {
         }
     }
 
-    async updateWeeklyHistory() {
+    updateWeeklyHistory() {
         const historyContainer = document.getElementById('weeklyHistory');
         const today = new Date();
-        const userId = this.currentUser || 'Gabriel';
         let html = '';
         
-        const weeklyData = await this.database.getUserWeeklyHistory(userId, today, 7);
-        
-        for (const dayData of weeklyData) {
-            const totalTime = dayData.totalTime || 0;
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date(today);
+            date.setDate(date.getDate() - i);
+            const dateKey = this.getDateKey(date);
+            const dateData = this.getDateData(dateKey);
+            
+            const totalTime = this.calculateTotalTime(dateData.sessions);
             const targetTime = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
             
             let status = 'error';
             let statusText = '❌ Não registrado';
             let statusClass = 'error';
             
-            if (dayData.workday && dayData.workday.workdayCompleted) {
+            if (dateData.workdayCompleted) {
                 if (totalTime >= targetTime) {
                     status = 'success';
                     statusText = '✅ Meta atingida';
@@ -403,13 +396,13 @@ class PontoDevSystem {
                     statusText = '⚠️ Meta parcial';
                     statusClass = 'warning';
                 }
-            } else if (dayData.justification) {
+            } else if (dateData.justification) {
                 status = 'warning';
                 statusText = '⚠️ Justificado';
                 statusClass = 'warning';
             }
             
-            const dateString = dayData.date.toLocaleDateString('pt-BR', { 
+            const dateString = date.toLocaleDateString('pt-BR', { 
                 weekday: 'short', 
                 day: '2-digit', 
                 month: '2-digit' 
@@ -421,7 +414,7 @@ class PontoDevSystem {
                         <div>
                             <p class="font-medium text-white">${dateString}</p>
                             <p class="text-sm text-gray-400">${this.formatDuration(totalTime)} estudado</p>
-                            ${dayData.justification ? `<p class="text-xs text-gray-500 mt-1">Justificativa: ${dayData.justification.text.substring(0, 50)}...</p>` : ''}
+                            ${dateData.justification ? `<p class="text-xs text-gray-500 mt-1">Justificativa: ${dateData.justification.substring(0, 50)}...</p>` : ''}
                         </div>
                         <div class="text-right">
                             <p class="text-sm font-medium">${statusText}</p>
@@ -435,49 +428,36 @@ class PontoDevSystem {
     }
 
     // Data management methods
-    async getTodaysData() {
+    getTodaysData() {
         const today = new Date();
-        const userId = this.currentUser || 'Gabriel';
-        const sessions = await this.database.getUserSessions(userId, today);
-        const workday = await this.database.getUserWorkday(userId, today);
-        
-        return {
-            date: this.getDateKey(today),
-            sessions: sessions || [],
-            workdayCompleted: workday ? workday.workdayCompleted : false,
-            justification: workday ? workday.justification : null
-        };
+        const dateKey = this.getDateKey(today);
+        return this.getDateData(dateKey);
     }
 
-    async getDateData(dateKey) {
-        const date = new Date(dateKey + 'T00:00:00');
-        const userId = this.currentUser || 'Gabriel';
-        const sessions = await this.database.getUserSessions(userId, date);
-        const workday = await this.database.getUserWorkday(userId, date);
-        
-        return {
+    getDateData(dateKey) {
+        const data = localStorage.getItem(`pontodev_${dateKey}`);
+        return data ? JSON.parse(data) : {
             date: dateKey,
-            sessions: sessions || [],
-            workdayCompleted: workday ? workday.workdayCompleted : false,
-            justification: workday ? workday.justification : null
+            sessions: [],
+            workdayCompleted: false,
+            justification: null
         };
     }
 
-    async saveTodaysData(data) {
+    saveTodaysData(data) {
         const today = new Date();
-        const userId = this.currentUser || 'Gabriel';
-        await this.database.saveUserWorkday(userId, today, data);
+        const dateKey = this.getDateKey(today);
+        this.saveDateData(dateKey, data);
     }
 
-    async saveDateData(dateKey, data) {
-        const date = new Date(dateKey + 'T00:00:00');
-        const userId = this.currentUser || 'Gabriel';
-        await this.database.saveUserWorkday(userId, date, data);
+    saveDateData(dateKey, data) {
+        localStorage.setItem(`pontodev_${dateKey}`, JSON.stringify(data));
     }
 
-    async saveTodaysSession(session) {
-        const userId = this.currentUser || 'Gabriel';
-        await this.database.saveUserSession(userId, session);
+    saveTodaysSession(session) {
+        const todayData = this.getTodaysData();
+        todayData.sessions.push(session);
+        this.saveTodaysData(todayData);
     }
 
     getDateKey(date) {
@@ -522,23 +502,6 @@ class PontoDevSystem {
         if (userData) {
             const data = JSON.parse(userData);
             this.currentUser = data.name;
-        }
-    }
-
-    updateDatabaseStatus() {
-        const indicator = document.getElementById('dbStatusIndicator');
-        const statusText = document.getElementById('dbStatusText');
-        
-        if (!indicator || !statusText) return;
-        
-        const status = this.database.getStatus();
-        
-        if (status.isOnline) {
-            indicator.className = 'w-2 h-2 rounded-full bg-green-500';
-            statusText.textContent = 'Online';
-        } else {
-            indicator.className = 'w-2 h-2 rounded-full bg-yellow-500';
-            statusText.textContent = 'Local';
         }
     }
 

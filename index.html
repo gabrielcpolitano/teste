@@ -55,15 +55,9 @@
                         <p class="text-sm text-gray-400">Funcionário</p>
                         <p class="font-medium text-white" id="employeeNameDisplay">Gabriel</p>
                     </div>
-                    <div class="flex items-center space-x-2">
-                        <div id="dbStatus" class="flex items-center space-x-1">
-                            <div class="w-2 h-2 rounded-full bg-yellow-500" id="dbStatusIndicator"></div>
-                            <span class="text-xs text-gray-400" id="dbStatusText">Conectando...</span>
-                        </div>
-                        <button id="logoutBtn" class="text-gray-400 hover:text-white transition-colors">
-                            <i data-feather="log-out" class="w-5 h-5"></i>
-                        </button>
-                    </div>
+                    <button id="logoutBtn" class="text-gray-400 hover:text-white transition-colors">
+                        <i data-feather="log-out" class="w-5 h-5"></i>
+                    </button>
                 </div>
             </div>
         </header>
@@ -186,8 +180,6 @@
         <!-- Messages will be populated by JavaScript -->
     </div>
 
-    <script src="database.js"></script>
-    <script src="onlinedb.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
