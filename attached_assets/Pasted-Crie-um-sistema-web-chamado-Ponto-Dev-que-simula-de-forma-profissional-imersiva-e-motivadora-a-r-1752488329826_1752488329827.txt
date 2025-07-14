@@ -1,0 +1,108 @@
+Crie um sistema web chamado "Ponto Dev", que simula de forma profissional, imersiva e motivadora a rotina de um desenvolvedor júnior contratado por uma empresa fictícia chamada TechFoco Inc.
+
+O objetivo é que eu, Gabriel, me sinta como um funcionário de verdade que precisa registrar ponto diariamente e comprovar disciplina. O sistema será usado para registrar jornadas de estudo de no mínimo 3 horas por dia, todos os dias da semana.
+
+O site deve ser uma simulação corporativa realista, reforçando o compromisso com o “trabalho” e criando um senso de responsabilidade diária.
+
+🛠 Tecnologias obrigatórias:
+HTML
+
+JavaScript puro (manipulação via DOM)
+
+TailwindCSS
+
+Sem frameworks (React, Vue etc.)
+
+Utilizar LocalStorage para armazenar dados
+
+🎯 Funcionalidades principais:
+1. 🔐 Tela de login simbólica
+Campo para nome (padrão: Gabriel)
+
+Botão: “Iniciar expediente”
+
+Mensagem: “Bem-vindo de volta, Gabriel. Hoje é mais um passo na sua jornada na TechFoco Inc.”
+
+2. 📊 Dashboard com aparência de sistema corporativo
+Nome da empresa e logotipo fictício
+
+Saudação do dia + frase motivacional
+
+Status atual: “Você está em expediente” / “Expediente não iniciado”
+
+Relógio em tempo real
+
+3. ⏱ Registro de ponto com múltiplas sessões por dia
+Botão “Bater ponto de entrada”
+
+Registra o horário de início de uma sessão
+
+Botão “Bater ponto de saída”
+
+Registra o término da sessão
+
+Acumula tempo no dia
+
+Botão “Encerrar expediente” (obrigatório para concluir o dia)
+
+Exibe total de horas acumuladas
+
+Avalia se a meta de 3 horas foi atingida ou não
+
+Exibe mensagem final:
+
+“✅ Meta cumprida: 3h20min – Excelente trabalho, Gabriel!”
+
+“⚠️ Meta não atingida: 1h40min – Recupere o ritmo amanhã.”
+
+4. 📅 Justificativa obrigatória para ausência
+Se o expediente não for encerrado até o final do dia, ao abrir o sistema no dia seguinte:
+
+O sistema detecta a ausência e exige uma justificativa escrita
+
+Exibe tela de texto obrigatório:
+
+“Ontem, dia 13/07, você não registrou expediente. Por favor, insira uma justificativa profissional para a ausência.”
+
+Justificativas ficam salvas no histórico semanal
+
+Se não justificar, o sistema permanece bloqueado até o envio
+
+5. 📈 Histórico semanal
+Gráfico dos últimos 7 dias:
+
+Verde: meta atingida
+
+Amarelo: meta parcial
+
+Vermelho: ausência com ou sem justificativa
+
+Cada dia mostra:
+
+Total estudado
+
+Justificativa (se houver)
+
+Status (✔️ ou ❌)
+
+💅 Estilo visual:
+Layout moderno, limpo e responsivo com TailwindCSS
+
+Painel semelhante a um sistema interno de empresa de tecnologia
+
+Ícones elegantes: relógio, terminal, foguete, café
+
+Sons suaves (opcional) ao bater ponto
+
+Modo escuro automático (opcional)
+
+💡 Extras motivacionais opcionais:
+Selos ou emblemas por metas cumpridas (ex: 7 dias seguidos)
+
+Frases aleatórias de incentivo ao registrar ponto
+
+Alertas automáticos se o expediente não for iniciado até certo horário (ex: 18h)
+
+📌 Resumo:
+O sistema “Ponto Dev” deve ser uma simulação realista da rotina de um funcionário da empresa fictícia TechFoco Inc., feito com HTML + JS (DOM) + TailwindCSS, com foco em disciplina, registro, justificativas e persistência dos dados no LocalStorage.
+A experiência deve me fazer sentir totalmente inserido em um ambiente de trabalho real, onde faltas precisam ser justificadas, horários precisam ser respeitados, e progresso deve ser visível.
