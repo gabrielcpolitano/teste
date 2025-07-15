@@ -211,10 +211,9 @@ class PontoDevSystem {
             this.clockOut();
         }
         
-        // Save workday as completed (keep sessions for weekly history)
+        // Save workday as completed
         todayData.workdayCompleted = true;
         todayData.completedAt = new Date().toISOString();
-        todayData.totalTime = totalTime; // Store total time for weekly history
         this.saveTodaysData(todayData);
         
         // Show final message
@@ -231,17 +230,9 @@ class PontoDevSystem {
         
         this.showMessage(message, messageType, 5000);
         
-        // Clear all sessions and reset for next day
-        this.currentSession = null;
+        // Reset for next day
         this.isWorkdayStarted = false;
-        
-        // Reset button states
-        document.getElementById('clockInBtn').disabled = false;
-        document.getElementById('clockOutBtn').disabled = true;
-        
-        // Update displays
         this.updateWorkStatus();
-        this.updateSessionsDisplay();
         this.updateWeeklyHistory();
     }
 
@@ -305,12 +296,6 @@ class PontoDevSystem {
         const sessionsContainer = document.getElementById('dailySessions');
         const todayData = this.getTodaysData();
         
-        // If workday is completed, show completion message instead of sessions
-        if (todayData.workdayCompleted && !this.isWorkdayStarted) {
-            sessionsContainer.innerHTML = '<p class="text-gray-400 text-center py-4">Expediente encerrado - Aguardando novo dia</p>';
-            return;
-        }
-        
         if (todayData.sessions.length === 0 && !this.currentSession) {
             sessionsContainer.innerHTML = '<p class="text-gray-400 text-center py-4">Nenhuma sessão registrada hoje</p>';
             return;
@@ -318,24 +303,22 @@ class PontoDevSystem {
         
         let html = '';
         
-        // Show completed sessions only if workday is not completed
-        if (!todayData.workdayCompleted) {
-            todayData.sessions.forEach((session, index) => {
-                html += `
-                    <div class="session-card">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <p class="font-medium text-white">Sessão ${index + 1}</p>
-                                <p class="text-sm text-gray-400">${session.startTimeDisplay} - ${session.endTimeDisplay}</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-medium text-green-400">${session.durationDisplay}</p>
-                            </div>
+        // Show completed sessions
+        todayData.sessions.forEach((session, index) => {
+            html += `
+                <div class="session-card">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="font-medium text-white">Sessão ${index + 1}</p>
+                            <p class="text-sm text-gray-400">${session.startTimeDisplay} - ${session.endTimeDisplay}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-medium text-green-400">${session.durationDisplay}</p>
                         </div>
                     </div>
-                `;
-            });
-        }
+                </div>
+            `;
+        });
         
         // Show active session
         if (this.currentSession) {
