@@ -230,9 +230,22 @@ class PontoDevSystem {
         
         this.showMessage(message, messageType, 5000);
         
-        // Reset for next day
+        // Clear all sessions and reset for next day
+        this.currentSession = null;
         this.isWorkdayStarted = false;
+        
+        // Clear today's sessions from display after workday ends
+        const clearedTodayData = this.getTodaysData();
+        clearedTodayData.sessions = [];
+        this.saveTodaysData(clearedTodayData);
+        
+        // Reset button states
+        document.getElementById('clockInBtn').disabled = false;
+        document.getElementById('clockOutBtn').disabled = true;
+        
+        // Update displays
         this.updateWorkStatus();
+        this.updateSessionsDisplay();
         this.updateWeeklyHistory();
     }
 
