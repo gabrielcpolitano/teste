@@ -1,18 +1,24 @@
-// Ponto Dev - TechFoco Inc. Time Tracking System
-// Professional corporate-style time tracking for study discipline
+// Ponto Dev - TechFoco Inc. Lesson System
+// Professional corporate-style lesson tracking for study discipline
 
 class PontoDevSystem {
     constructor() {
         this.currentUser = null;
-        this.currentSession = null;
-        this.isWorkdayStarted = false;
+        this.isDayStarted = false;
+        this.lessons = {
+            lesson1: false,
+            lesson2: false,
+            lesson3: false,
+            lesson4: false,
+            lesson5: false
+        };
         this.motivationalMessages = [
-            "Hoje é mais um dia para alcançar seus objetivos na TechFoco Inc.",
-            "Sua dedicação hoje constrói o sucesso de amanhã.",
-            "Cada hora de estudo é um investimento no seu futuro profissional.",
-            "A consistência é a chave para o crescimento na carreira.",
-            "Mais um dia para demonstrar sua excelência técnica.",
-            "Seu comprometimento faz a diferença na TechFoco Inc.",
+            "Hoje você precisa completar 5 aulas para manter seu progresso!",
+            "Cada aula concluída é um passo para o seu sucesso profissional.",
+            "A constância nos estudos é a chave para o crescimento na carreira.",
+            "Mantenha o foco e complete todas as aulas de hoje.",
+            "Sua dedicação hoje constrói o futuro que você deseja.",
+            "Excelência se constrói uma aula por vez.",
             "Transforme conhecimento em resultados excepcionais."
         ];
         
@@ -36,10 +42,16 @@ class PontoDevSystem {
         document.getElementById('startWorkdayBtn').addEventListener('click', () => this.startWorkday());
         
         // Dashboard controls
-        document.getElementById('clockInBtn').addEventListener('click', () => this.clockIn());
-        document.getElementById('clockOutBtn').addEventListener('click', () => this.clockOut());
         document.getElementById('endWorkdayBtn').addEventListener('click', () => this.endWorkday());
         document.getElementById('logoutBtn').addEventListener('click', () => this.logout());
+        
+        // Lesson checkboxes
+        for (let i = 1; i <= 5; i++) {
+            const checkbox = document.getElementById(`lesson${i}`);
+            if (checkbox) {
+                checkbox.addEventListener('change', () => this.toggleLesson(i));
+            }
+        }
         
         // Absence justification
         document.getElementById('submitJustificationBtn').addEventListener('click', () => this.submitJustification());
@@ -69,14 +81,6 @@ class PontoDevSystem {
             clockElement.classList.add('clock-display');
         }
         
-        // Update session time if active
-        if (this.currentSession) {
-            this.updateSessionTime();
-        }
-        
-        // Update daily total
-        this.updateDailyTotal();
-        
         setTimeout(() => this.updateClock(), 1000);
     }
 
@@ -85,7 +89,7 @@ class PontoDevSystem {
         const userName = nameInput.value.trim() || 'Gabriel';
         
         this.currentUser = userName;
-        this.isWorkdayStarted = true;
+        this.isDayStarted = true;
         
         // Show welcome message
         const welcomeMsg = document.getElementById('welcomeMessage');
@@ -118,122 +122,114 @@ class PontoDevSystem {
         const randomMessage = this.motivationalMessages[Math.floor(Math.random() * this.motivationalMessages.length)];
         document.getElementById('motivationalMessage').textContent = randomMessage;
         
-        // Update work status
-        this.updateWorkStatus();
+        // Update day status
+        this.updateDayStatus();
         
         // Load today's data
         this.loadTodaysData();
         
+        // Update lesson progress
+        this.updateLessonProgress();
+        
         // Update weekly history
         this.updateWeeklyHistory();
+        
+        // Initialize Feather icons
+        if (typeof feather !== 'undefined') {
+            feather.replace();
+        }
     }
 
-    updateWorkStatus() {
-        const statusElement = document.getElementById('workStatus');
+    updateDayStatus() {
+        const completedCount = Object.values(this.lessons).filter(Boolean).length;
+        const statusElement = document.getElementById('dayStatus');
         
-        if (this.currentSession) {
-            statusElement.textContent = 'Você está em expediente';
-            statusElement.className = 'text-lg font-semibold text-green-400';
-        } else if (this.isWorkdayStarted) {
-            statusElement.textContent = 'Expediente iniciado - Aguardando entrada';
-            statusElement.className = 'text-lg font-semibold text-yellow-400';
+        if (statusElement) {
+            if (completedCount === 0) {
+                statusElement.textContent = 'Dia iniciado';
+            } else if (completedCount === 5) {
+                statusElement.textContent = 'Dia concluído';
+            } else {
+                statusElement.textContent = `${completedCount}/5 aulas`;
+            }
+        }
+    }
+
+    toggleLesson(lessonNumber) {
+        const checkbox = document.getElementById(`lesson${lessonNumber}`);
+        const timeElement = document.getElementById(`lesson${lessonNumber}-time`);
+        
+        this.lessons[`lesson${lessonNumber}`] = checkbox.checked;
+        
+        if (checkbox.checked) {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('pt-BR', { 
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            timeElement.textContent = `Concluída às ${timeString}`;
+            timeElement.classList.add('text-green-400');
+            timeElement.classList.remove('text-gray-400');
+            
+            this.showMessage(`Aula ${lessonNumber} concluída! Parabéns!`, 'success');
+            this.playSound('success');
         } else {
-            statusElement.textContent = 'Expediente não iniciado';
-            statusElement.className = 'text-lg font-semibold text-gray-400';
+            timeElement.textContent = 'Não iniciada';
+            timeElement.classList.remove('text-green-400');
+            timeElement.classList.add('text-gray-400');
         }
+        
+        this.updateLessonProgress();
+        this.updateDayStatus();
+        this.saveTodaysData();
     }
 
-    clockIn() {
-        if (this.currentSession) {
-            this.showMessage('Você já está em uma sessão ativa!', 'error');
-            return;
+    updateLessonProgress() {
+        const completedCount = Object.values(this.lessons).filter(Boolean).length;
+        const progressPercent = (completedCount / 5) * 100;
+        
+        // Update completed lessons counter
+        const completedElement = document.getElementById('completedLessons');
+        if (completedElement) {
+            completedElement.textContent = `${completedCount}/5`;
         }
         
-        const now = new Date();
-        this.currentSession = {
-            startTime: now.toISOString(),
-            startTimeDisplay: now.toLocaleTimeString('pt-BR', { hour12: false })
-        };
-        
-        // Update button states
-        document.getElementById('clockInBtn').disabled = true;
-        document.getElementById('clockOutBtn').disabled = false;
-        
-        this.updateWorkStatus();
-        this.updateSessionsDisplay();
-        this.showMessage('Ponto de entrada registrado com sucesso!', 'success');
-        
-        // Play sound effect (optional)
-        this.playSound('clockIn');
-    }
-
-    clockOut() {
-        if (!this.currentSession) {
-            this.showMessage('Nenhuma sessão ativa para encerrar!', 'error');
-            return;
+        // Update progress text
+        const progressTextElement = document.getElementById('progressText');
+        if (progressTextElement) {
+            progressTextElement.textContent = `${completedCount} de 5 aulas concluídas`;
         }
         
-        const now = new Date();
-        const startTime = new Date(this.currentSession.startTime);
-        const duration = now - startTime;
+        // Update progress bar
+        const progressBarElement = document.getElementById('progressBar');
+        if (progressBarElement) {
+            progressBarElement.style.width = `${progressPercent}%`;
+        }
         
-        // Save session to localStorage
-        const session = {
-            ...this.currentSession,
-            endTime: now.toISOString(),
-            endTimeDisplay: now.toLocaleTimeString('pt-BR', { hour12: false }),
-            duration: duration,
-            durationDisplay: this.formatDuration(duration)
-        };
-        
-        this.saveTodaysSession(session);
-        this.currentSession = null;
-        
-        // Update button states
-        document.getElementById('clockInBtn').disabled = false;
-        document.getElementById('clockOutBtn').disabled = true;
-        
-        this.updateWorkStatus();
-        this.updateSessionsDisplay();
-        this.showMessage('Ponto de saída registrado com sucesso!', 'success');
-        
-        // Play sound effect (optional)
-        this.playSound('clockOut');
+        // Check if all lessons are complete
+        if (completedCount === 5) {
+            this.showMessage('Parabéns! Você concluiu todas as aulas de hoje!', 'success', 5000);
+            this.playSound('complete');
+        }
     }
 
     endWorkday() {
-        const todayData = this.getTodaysData();
-        const totalTime = this.calculateTotalTime(todayData.sessions);
-        const targetTime = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
+        const completedCount = Object.values(this.lessons).filter(Boolean).length;
         
-        // Force clock out if session is active
-        if (this.currentSession) {
-            this.clockOut();
+        if (completedCount < 5) {
+            if (!confirm(`Você só concluiu ${completedCount} de 5 aulas. Tem certeza que deseja finalizar o dia?`)) {
+                return;
+            }
         }
         
-        // Save workday as completed
-        todayData.workdayCompleted = true;
-        todayData.completedAt = new Date().toISOString();
-        this.saveTodaysData(todayData);
-        
-        // Show final message
-        const totalTimeFormatted = this.formatDuration(totalTime);
-        let message, messageType;
-        
-        if (totalTime >= targetTime) {
-            message = `✅ Meta cumprida: ${totalTimeFormatted} – Excelente trabalho, ${this.currentUser}!`;
-            messageType = 'success';
-        } else {
-            message = `⚠️ Meta não atingida: ${totalTimeFormatted} – Recupere o ritmo amanhã.`;
-            messageType = 'warning';
-        }
-        
-        this.showMessage(message, messageType, 5000);
+        this.saveTodaysData();
+        this.showMessage('Dia finalizado com sucesso!', 'success');
         
         // Reset for next day
-        this.isWorkdayStarted = false;
-        this.updateWorkStatus();
-        this.updateWeeklyHistory();
+        setTimeout(() => {
+            this.logout();
+        }, 2000);
     }
 
     checkForAbsences() {
@@ -243,191 +239,129 @@ class PontoDevSystem {
         
         const yesterdayData = this.getDateData(yesterdayKey);
         
-        if (!yesterdayData.workdayCompleted && !yesterdayData.justification) {
+        if (!yesterdayData || Object.values(yesterdayData.lessons || {}).filter(Boolean).length === 0) {
             this.showAbsenceModal(yesterday);
         }
     }
 
     showAbsenceModal(date) {
         const modal = document.getElementById('absenceModal');
-        const messageElement = document.getElementById('absenceMessage');
+        const message = document.getElementById('absenceMessage');
         
-        const dateString = date.toLocaleDateString('pt-BR');
-        messageElement.textContent = `Ontem, dia ${dateString}, você não registrou expediente. Por favor, insira uma justificativa profissional para a ausência.`;
+        const dateStr = date.toLocaleDateString('pt-BR');
+        message.textContent = `Ontem, dia ${dateStr}, você não registrou nenhuma aula. Por favor, insira uma justificativa profissional para a ausência.`;
         
         modal.classList.remove('hidden');
         modal.classList.add('modal-backdrop');
-        
-        // Store the date for justification
-        this.pendingJustificationDate = date;
     }
 
     submitJustification() {
-        const justificationText = document.getElementById('absenceJustification').value.trim();
+        const justification = document.getElementById('absenceJustification').value.trim();
         
-        if (!justificationText) {
-            this.showMessage('Por favor, digite uma justificativa.', 'error');
+        if (!justification) {
+            this.showMessage('Por favor, insira uma justificativa.', 'error');
             return;
         }
         
-        const dateKey = this.getDateKey(this.pendingJustificationDate);
-        const dateData = this.getDateData(dateKey);
+        // Save justification
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayKey = this.getDateKey(yesterday);
         
-        dateData.justification = justificationText;
-        dateData.justificationDate = new Date().toISOString();
+        const yesterdayData = this.getDateData(yesterdayKey) || {};
+        yesterdayData.justification = justification;
+        yesterdayData.lessons = {};
         
-        this.saveDateData(dateKey, dateData);
+        this.saveDateData(yesterdayKey, yesterdayData);
         
-        // Hide modal
         document.getElementById('absenceModal').classList.add('hidden');
         document.getElementById('absenceJustification').value = '';
         
         this.showMessage('Justificativa enviada com sucesso!', 'success');
-        this.updateWeeklyHistory();
     }
 
     loadTodaysData() {
-        const todayData = this.getTodaysData();
-        this.updateSessionsDisplay();
-        this.updateDailyTotal();
-    }
-
-    updateSessionsDisplay() {
-        const sessionsContainer = document.getElementById('dailySessions');
-        const todayData = this.getTodaysData();
+        const todaysData = this.getTodaysData();
         
-        if (todayData.sessions.length === 0 && !this.currentSession) {
-            sessionsContainer.innerHTML = '<p class="text-gray-400 text-center py-4">Nenhuma sessão registrada hoje</p>';
-            return;
+        if (todaysData && todaysData.lessons) {
+            this.lessons = { ...todaysData.lessons };
+            
+            // Update checkboxes and times
+            for (let i = 1; i <= 5; i++) {
+                const checkbox = document.getElementById(`lesson${i}`);
+                const timeElement = document.getElementById(`lesson${i}-time`);
+                
+                if (checkbox) {
+                    checkbox.checked = this.lessons[`lesson${i}`] || false;
+                    
+                    if (checkbox.checked && todaysData.lessonTimes && todaysData.lessonTimes[`lesson${i}`]) {
+                        timeElement.textContent = `Concluída às ${todaysData.lessonTimes[`lesson${i}`]}`;
+                        timeElement.classList.add('text-green-400');
+                        timeElement.classList.remove('text-gray-400');
+                    }
+                }
+            }
         }
         
-        let html = '';
-        
-        // Show completed sessions
-        todayData.sessions.forEach((session, index) => {
-            html += `
-                <div class="session-card">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <p class="font-medium text-white">Sessão ${index + 1}</p>
-                            <p class="text-sm text-gray-400">${session.startTimeDisplay} - ${session.endTimeDisplay}</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="font-medium text-green-400">${session.durationDisplay}</p>
-                        </div>
-                    </div>
-                </div>
-            `;
-        });
-        
-        // Show active session
-        if (this.currentSession) {
-            html += `
-                <div class="session-card active">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <p class="font-medium text-white">Sessão Ativa</p>
-                            <p class="text-sm text-gray-400">Iniciada às ${this.currentSession.startTimeDisplay}</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="font-medium text-green-400" id="currentSessionTime">00:00:00</p>
-                            <p class="text-xs text-gray-400">em andamento</p>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        sessionsContainer.innerHTML = html;
-    }
-
-    updateSessionTime() {
-        const sessionTimeElement = document.getElementById('currentSessionTime');
-        if (sessionTimeElement && this.currentSession) {
-            const now = new Date();
-            const startTime = new Date(this.currentSession.startTime);
-            const duration = now - startTime;
-            sessionTimeElement.textContent = this.formatDuration(duration);
-        }
-    }
-
-    updateDailyTotal() {
-        const todayData = this.getTodaysData();
-        let totalTime = this.calculateTotalTime(todayData.sessions);
-        
-        // Add current session time if active
-        if (this.currentSession) {
-            const now = new Date();
-            const startTime = new Date(this.currentSession.startTime);
-            totalTime += (now - startTime);
-        }
-        
-        const totalTimeElement = document.getElementById('todayTime');
-        if (totalTimeElement) {
-            totalTimeElement.textContent = this.formatDuration(totalTime);
-        }
+        this.updateLessonProgress();
     }
 
     updateWeeklyHistory() {
         const historyContainer = document.getElementById('weeklyHistory');
+        historyContainer.innerHTML = '';
+        
         const today = new Date();
-        let html = '';
         
         for (let i = 6; i >= 0; i--) {
             const date = new Date(today);
-            date.setDate(date.getDate() - i);
+            date.setDate(today.getDate() - i);
             const dateKey = this.getDateKey(date);
             const dateData = this.getDateData(dateKey);
             
-            const totalTime = this.calculateTotalTime(dateData.sessions);
-            const targetTime = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
+            const completedCount = dateData && dateData.lessons ? 
+                Object.values(dateData.lessons).filter(Boolean).length : 0;
             
-            let status = 'error';
-            let statusText = '❌ Não registrado';
+            const isToday = i === 0;
+            const dateStr = date.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit' });
+            
             let statusClass = 'error';
+            let statusText = 'Não estudou';
             
-            if (dateData.workdayCompleted) {
-                if (totalTime >= targetTime) {
-                    status = 'success';
-                    statusText = '✅ Meta atingida';
-                    statusClass = 'success';
-                } else {
-                    status = 'warning';
-                    statusText = '⚠️ Meta parcial';
-                    statusClass = 'warning';
-                }
-            } else if (dateData.justification) {
-                status = 'warning';
-                statusText = '⚠️ Justificado';
+            if (completedCount === 5) {
+                statusClass = 'success';
+                statusText = '5/5 aulas';
+            } else if (completedCount > 0) {
+                statusClass = 'warning';
+                statusText = `${completedCount}/5 aulas`;
+            } else if (dateData && dateData.justification) {
+                statusClass = 'warning';
+                statusText = 'Justificado';
+            }
+            
+            if (isToday && completedCount === 0) {
+                statusText = 'Hoje';
                 statusClass = 'warning';
             }
             
-            const dateString = date.toLocaleDateString('pt-BR', { 
-                weekday: 'short', 
-                day: '2-digit', 
-                month: '2-digit' 
-            });
-            
-            html += `
-                <div class="history-card ${statusClass}">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <p class="font-medium text-white">${dateString}</p>
-                            <p class="text-sm text-gray-400">${this.formatDuration(totalTime)} estudado</p>
-                            ${dateData.justification ? `<p class="text-xs text-gray-500 mt-1">Justificativa: ${dateData.justification.substring(0, 50)}...</p>` : ''}
-                        </div>
-                        <div class="text-right">
-                            <p class="text-sm font-medium">${statusText}</p>
-                        </div>
+            const historyCard = document.createElement('div');
+            historyCard.className = `history-card ${statusClass}`;
+            historyCard.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-white font-medium">${dateStr}${isToday ? ' (Hoje)' : ''}</p>
+                        <p class="text-sm text-gray-400">${statusText}</p>
+                    </div>
+                    <div class="text-right">
+                        <div class="w-4 h-4 rounded-full ${statusClass === 'success' ? 'bg-green-500' : 
+                            statusClass === 'warning' ? 'bg-yellow-500' : 'bg-red-500'}"></div>
                     </div>
                 </div>
             `;
+            
+            historyContainer.appendChild(historyCard);
         }
-        
-        historyContainer.innerHTML = html;
     }
 
-    // Data management methods
     getTodaysData() {
         const today = new Date();
         const dateKey = this.getDateKey(today);
@@ -435,18 +369,30 @@ class PontoDevSystem {
     }
 
     getDateData(dateKey) {
-        const data = localStorage.getItem(`pontodev_${dateKey}`);
-        return data ? JSON.parse(data) : {
-            date: dateKey,
-            sessions: [],
-            workdayCompleted: false,
-            justification: null
-        };
+        return JSON.parse(localStorage.getItem(`pontodev_${dateKey}`)) || null;
     }
 
-    saveTodaysData(data) {
+    saveTodaysData() {
         const today = new Date();
         const dateKey = this.getDateKey(today);
+        
+        const lessonTimes = {};
+        for (let i = 1; i <= 5; i++) {
+            if (this.lessons[`lesson${i}`]) {
+                const timeElement = document.getElementById(`lesson${i}-time`);
+                if (timeElement && timeElement.textContent.includes('Concluída às')) {
+                    lessonTimes[`lesson${i}`] = timeElement.textContent.replace('Concluída às ', '');
+                }
+            }
+        }
+        
+        const data = {
+            lessons: this.lessons,
+            lessonTimes: lessonTimes,
+            user: this.currentUser,
+            date: today.toISOString()
+        };
+        
         this.saveDateData(dateKey, data);
     }
 
@@ -454,33 +400,13 @@ class PontoDevSystem {
         localStorage.setItem(`pontodev_${dateKey}`, JSON.stringify(data));
     }
 
-    saveTodaysSession(session) {
-        const todayData = this.getTodaysData();
-        todayData.sessions.push(session);
-        this.saveTodaysData(todayData);
-    }
-
     getDateKey(date) {
         return date.toISOString().split('T')[0];
-    }
-
-    calculateTotalTime(sessions) {
-        return sessions.reduce((total, session) => total + (session.duration || 0), 0);
-    }
-
-    formatDuration(ms) {
-        const totalSeconds = Math.floor(ms / 1000);
-        const hours = Math.floor(totalSeconds / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
-        
-        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
 
     showMessage(message, type = 'success', duration = 3000) {
         const container = document.getElementById('messageContainer');
         const messageDiv = document.createElement('div');
-        
         messageDiv.className = `notification ${type}`;
         messageDiv.textContent = message;
         
@@ -492,16 +418,38 @@ class PontoDevSystem {
     }
 
     playSound(type) {
-        // Optional: Add sound effects
-        // This would require audio files or Web Audio API
-        console.log(`Sound: ${type}`);
+        // Create audio context for sound feedback
+        if (typeof AudioContext !== 'undefined' || typeof webkitAudioContext !== 'undefined') {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            if (type === 'success') {
+                oscillator.frequency.value = 800;
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            } else if (type === 'complete') {
+                oscillator.frequency.value = 1200;
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+            }
+            
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.2);
+        }
     }
 
     loadUserData() {
         const userData = localStorage.getItem('pontodev_user');
         if (userData) {
-            const data = JSON.parse(userData);
-            this.currentUser = data.name;
+            const user = JSON.parse(userData);
+            if (user.name) {
+                document.getElementById('employeeName').value = user.name;
+            }
         }
     }
 
@@ -515,43 +463,30 @@ class PontoDevSystem {
         }
         
         // Reset state
-        this.currentSession = null;
-        this.isWorkdayStarted = false;
+        this.currentUser = null;
+        this.isDayStarted = false;
+        this.lessons = {
+            lesson1: false,
+            lesson2: false,
+            lesson3: false,
+            lesson4: false,
+            lesson5: false
+        };
         
-        // Return to login screen
+        // Show login screen
         document.getElementById('dashboard').classList.add('hidden');
         document.getElementById('loginScreen').classList.remove('hidden');
-        
-        // Reset login form
         document.getElementById('welcomeMessage').classList.add('hidden');
-        document.getElementById('employeeName').value = this.currentUser || 'Gabriel';
+        
+        // Reset form
+        document.getElementById('employeeName').value = 'Gabriel';
+        
+        this.showMessage('Logout realizado com sucesso!', 'success');
     }
 }
 
 // Initialize the system when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     new PontoDevSystem();
+    console.log('Ponto Dev System loaded successfully');
 });
-
-// Additional utility functions
-function formatTimeForDisplay(date) {
-    return date.toLocaleTimeString('pt-BR', { 
-        hour12: false,
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-}
-
-function getGreetingMessage(hour) {
-    if (hour < 12) return 'Bom dia';
-    if (hour < 18) return 'Boa tarde';
-    return 'Boa noite';
-}
-
-// Service worker registration (optional for PWA features)
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        // Could register a service worker here for offline functionality
-        console.log('Ponto Dev System loaded successfully');
-    });
-}
