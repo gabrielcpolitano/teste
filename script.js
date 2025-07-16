@@ -149,6 +149,7 @@ class PontoDevSystem {
                 statusElement.textContent = 'Dia concluído';
         }
     }
+    }
 
     toggleLesson(lessonId) {
         const checkbox = document.getElementById(lessonId);
