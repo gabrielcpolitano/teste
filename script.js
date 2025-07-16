@@ -208,12 +208,6 @@ class PontoDevSystem {
             completedElement.textContent = `${completedCount}/10`;
         }
         
-        // Update progress text
-        const progressTextElement = document.getElementById('progressText');
-        if (progressTextElement) {
-            progressTextElement.textContent = `${completedCount} de 10 aulas concluídas (B7Web: ${b7webCompleted}/5, FIAP: ${fiapCompleted}/5)`;
-        }
-        
         // Update progress bar
         const progressBarElement = document.getElementById('progressBar');
         if (progressBarElement) {
