@@ -116,16 +116,6 @@ class PontoDevSystem {
         // Update user name
         document.getElementById('employeeNameDisplay').textContent = this.currentUser;
         
-        // Update greeting based on time
-        const now = new Date();
-        const hour = now.getHours();
-        let greeting = 'Bom dia';
-        
-        if (hour >= 12 && hour < 18) greeting = 'Boa tarde';
-        else if (hour >= 18) greeting = 'Boa noite';
-        
-        document.getElementById('dailyGreeting').textContent = `${greeting}, ${this.currentUser}!`;
-        
         // Random motivational message
         const randomMessage = this.motivationalMessages[Math.floor(Math.random() * this.motivationalMessages.length)];
         document.getElementById('motivationalMessage').textContent = randomMessage;
