@@ -10,18 +10,13 @@ class PontoDevSystem {
             b7web2: false,
             b7web3: false,
             b7web4: false,
-            b7web5: false,
-            fiap1: false,
-            fiap2: false,
-            fiap3: false,
-            fiap4: false,
-            fiap5: false
+            b7web5: false
         };
         this.motivationalMessages = [
-            "Hoje você precisa completar 10 aulas (5 B7Web + 5 FIAP) para manter seu progresso!",
+            "Hoje você precisa completar 5 aulas do B7Web para manter seu progresso!",
             "Cada aula concluída é um passo para o seu sucesso profissional.",
             "A constância nos estudos é a chave para o crescimento na carreira.",
-            "Mantenha o foco e complete todas as aulas de hoje.",
+            "Mantenha o foco e complete todas as 5 aulas de hoje.",
             "Sua dedicação hoje constrói o futuro que você deseja.",
             "Excelência se constrói uma aula por vez.",
             "Transforme conhecimento em resultados excepcionais."
@@ -51,15 +46,12 @@ class PontoDevSystem {
         document.getElementById('logoutBtn').addEventListener('click', () => this.logout());
         
         // Lesson checkboxes
-        const lessonTypes = ['b7web', 'fiap'];
-        lessonTypes.forEach(type => {
-            for (let i = 1; i <= 5; i++) {
-                const checkbox = document.getElementById(`${type}${i}`);
-                if (checkbox) {
-                    checkbox.addEventListener('change', () => this.toggleLesson(`${type}${i}`));
-                }
+        for (let i = 1; i <= 5; i++) {
+            const checkbox = document.getElementById(`b7web${i}`);
+            if (checkbox) {
+                checkbox.addEventListener('change', () => this.toggleLesson(`b7web${i}`));
             }
-        });
+        }
         
         // Absence justification
         document.getElementById('submitJustificationBtn').addEventListener('click', () => this.submitJustification());
@@ -143,12 +135,12 @@ class PontoDevSystem {
         const statusElement = document.getElementById('dayStatus');
         
         if (statusElement) {
-            if (completedCount < 10) {
+            if (completedCount < 5) {
                 statusElement.textContent = 'Dia iniciado';
             } else {
                 statusElement.textContent = 'Dia concluído';
+            }
         }
-    }
     }
 
     toggleLesson(lessonId) {
@@ -168,8 +160,7 @@ class PontoDevSystem {
             timeElement.classList.add('text-green-400');
             timeElement.classList.remove('text-gray-400');
             
-            const lessonName = lessonId.includes('b7web') ? 'B7Web' : 'FIAP';
-            this.showMessage(`Aula ${lessonName} concluída! Parabéns!`, 'success');
+            this.showMessage(`Aula B7Web concluída! Parabéns!`, 'success');
             this.playSound('success');
         } else {
             timeElement.textContent = 'Não iniciada';
@@ -184,16 +175,12 @@ class PontoDevSystem {
 
     updateLessonProgress() {
         const completedCount = Object.values(this.lessons).filter(Boolean).length;
-        const progressPercent = (completedCount / 10) * 100;
-        
-        // Calculate B7Web and FIAP progress
-        const b7webCompleted = Object.keys(this.lessons).filter(key => key.startsWith('b7web') && this.lessons[key]).length;
-        const fiapCompleted = Object.keys(this.lessons).filter(key => key.startsWith('fiap') && this.lessons[key]).length;
+        const progressPercent = (completedCount / 5) * 100;
         
         // Update completed lessons counter
         const completedElement = document.getElementById('completedLessons');
         if (completedElement) {
-            completedElement.textContent = `${completedCount}/10`;
+            completedElement.textContent = `${completedCount}/5`;
         }
         
         // Update progress bar
@@ -203,8 +190,8 @@ class PontoDevSystem {
         }
         
         // Check if all lessons are complete
-        if (completedCount === 10) {
-            this.showMessage('Parabéns! Você concluiu todas as 10 aulas de hoje!', 'success', 5000);
+        if (completedCount === 5) {
+            this.showMessage('Parabéns! Você concluiu todas as 5 aulas de hoje!', 'success', 5000);
             this.playSound('complete');
         }
     }
@@ -212,8 +199,8 @@ class PontoDevSystem {
     endWorkday() {
         const completedCount = Object.values(this.lessons).filter(Boolean).length;
         
-        if (completedCount < 10) {
-            if (!confirm(`Você só concluiu ${completedCount} de 10 aulas. Tem certeza que deseja finalizar o dia?`)) {
+        if (completedCount < 5) {
+            if (!confirm(`Você só concluiu ${completedCount} de 5 aulas. Tem certeza que deseja finalizar o dia?`)) {
                 return;
             }
         }

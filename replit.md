@@ -2,13 +2,14 @@
 
 ## Overview
 
-This is a professional lesson tracking web application called "Ponto Dev" that simulates a corporate environment for a fictional company called TechFoco Inc. The system is designed to create an immersive experience for study discipline, making the user feel like a real employee who needs to complete 10 daily lessons (5 B7Web course + 5 FIAP college). The application focuses on motivating consistent study habits through a corporate-style interface with a modern dual-category checklist system.
+This is a professional lesson tracking web application called "Ponto Dev" that simulates a corporate environment for a fictional company called TechFoco Inc. The system is designed to create an immersive experience for study discipline, making the user feel like a real employee who needs to complete 5 daily B7Web course lessons. The application focuses on motivating consistent study habits through a corporate-style interface with a modern checklist system.
 
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
 User requested: Change from time tracking to lesson completion checklist - 5 daily lessons instead of time tracking.
 User requested: Expand to 10 daily lessons divided into 5 B7Web course lessons and 5 FIAP college lessons.
+User requested: Remove FIAP section, keep only 5 B7Web lessons.
 
 ## System Architecture
 
@@ -105,5 +106,14 @@ The application is designed for simple static hosting:
   - FIAP College: 5 lessons with purple theming
   - Enhanced progress tracking with per-category breakdown
   - Updated validation to require 10 lessons for day completion
+
+- **Date**: July 16, 2025
+- **Simplification**: Removed FIAP college lessons, keeping only 5 B7Web course lessons
+- **Changes Made**:
+  - Removed FIAP section from HTML interface
+  - Updated JavaScript to handle only 5 B7Web lessons
+  - Updated progress tracking to work with 5 lessons total
+  - Updated validation and completion messages for 5 lessons
+  - Simplified motivational messages to reference only B7Web course
 
 The system prioritizes user experience and motivation while maintaining simplicity in implementation and deployment.
