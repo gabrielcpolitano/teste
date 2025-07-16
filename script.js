@@ -26,6 +26,7 @@ class PontoDevSystem {
     }
 
     init() {
+        this.migrateData();
         this.setupEventListeners();
         this.updateClock();
         this.checkForAbsences();
@@ -35,6 +36,27 @@ class PontoDevSystem {
         if (typeof feather !== 'undefined') {
             feather.replace();
         }
+    }
+
+    migrateData() {
+        // Clear any old data that might have FIAP lessons
+        const keys = Object.keys(localStorage);
+        keys.forEach(key => {
+            if (key.startsWith('pontodev_')) {
+                const data = JSON.parse(localStorage.getItem(key));
+                if (data && data.lessons) {
+                    // Remove FIAP lessons from old data
+                    const filteredLessons = {};
+                    Object.keys(data.lessons).forEach(lessonKey => {
+                        if (lessonKey.startsWith('b7web')) {
+                            filteredLessons[lessonKey] = data.lessons[lessonKey];
+                        }
+                    });
+                    data.lessons = filteredLessons;
+                    localStorage.setItem(key, JSON.stringify(data));
+                }
+            }
+        });
     }
 
     setupEventListeners() {
@@ -269,24 +291,21 @@ class PontoDevSystem {
             this.lessons = { ...todaysData.lessons };
             
             // Update checkboxes and times
-            const lessonTypes = ['b7web', 'fiap'];
-            lessonTypes.forEach(type => {
-                for (let i = 1; i <= 5; i++) {
-                    const lessonId = `${type}${i}`;
-                    const checkbox = document.getElementById(lessonId);
-                    const timeElement = document.getElementById(`${lessonId}-time`);
+            for (let i = 1; i <= 5; i++) {
+                const lessonId = `b7web${i}`;
+                const checkbox = document.getElementById(lessonId);
+                const timeElement = document.getElementById(`${lessonId}-time`);
+                
+                if (checkbox) {
+                    checkbox.checked = this.lessons[lessonId] || false;
                     
-                    if (checkbox) {
-                        checkbox.checked = this.lessons[lessonId] || false;
-                        
-                        if (checkbox.checked && todaysData.lessonTimes && todaysData.lessonTimes[lessonId]) {
-                            timeElement.textContent = `Concluída às ${todaysData.lessonTimes[lessonId]}`;
-                            timeElement.classList.add('text-green-400');
-                            timeElement.classList.remove('text-gray-400');
-                        }
+                    if (checkbox.checked && todaysData.lessonTimes && todaysData.lessonTimes[lessonId]) {
+                        timeElement.textContent = `Concluída às ${todaysData.lessonTimes[lessonId]}`;
+                        timeElement.classList.add('text-green-400');
+                        timeElement.classList.remove('text-gray-400');
                     }
                 }
-            });
+            }
         }
         
         this.updateLessonProgress();
@@ -313,12 +332,12 @@ class PontoDevSystem {
             let statusClass = 'error';
             let statusText = 'Não estudou';
             
-            if (completedCount === 10) {
+            if (completedCount === 5) {
                 statusClass = 'success';
-                statusText = '10/10 aulas';
+                statusText = '5/5 aulas';
             } else if (completedCount > 0) {
                 statusClass = 'warning';
-                statusText = `${completedCount}/10 aulas`;
+                statusText = `${completedCount}/5 aulas`;
             } else if (dateData && dateData.justification) {
                 statusClass = 'warning';
                 statusText = 'Justificado';
@@ -363,18 +382,15 @@ class PontoDevSystem {
         const dateKey = this.getDateKey(today);
         
         const lessonTimes = {};
-        const lessonTypes = ['b7web', 'fiap'];
-        lessonTypes.forEach(type => {
-            for (let i = 1; i <= 5; i++) {
-                const lessonId = `${type}${i}`;
-                if (this.lessons[lessonId]) {
-                    const timeElement = document.getElementById(`${lessonId}-time`);
-                    if (timeElement && timeElement.textContent.includes('Concluída às')) {
-                        lessonTimes[lessonId] = timeElement.textContent.replace('Concluída às ', '');
-                    }
+        for (let i = 1; i <= 5; i++) {
+            const lessonId = `b7web${i}`;
+            if (this.lessons[lessonId]) {
+                const timeElement = document.getElementById(`${lessonId}-time`);
+                if (timeElement && timeElement.textContent.includes('Concluída às')) {
+                    lessonTimes[lessonId] = timeElement.textContent.replace('Concluída às ', '');
                 }
             }
-        });
+        }
         
         const data = {
             lessons: this.lessons,
