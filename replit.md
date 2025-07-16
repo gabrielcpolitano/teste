@@ -2,12 +2,13 @@
 
 ## Overview
 
-This is a professional lesson tracking web application called "Ponto Dev" that simulates a corporate environment for a fictional company called TechFoco Inc. The system is designed to create an immersive experience for study discipline, making the user feel like a real employee who needs to complete 5 daily lessons. The application focuses on motivating consistent study habits through a corporate-style interface with a modern checklist system.
+This is a professional lesson tracking web application called "Ponto Dev" that simulates a corporate environment for a fictional company called TechFoco Inc. The system is designed to create an immersive experience for study discipline, making the user feel like a real employee who needs to complete 10 daily lessons (5 B7Web course + 5 FIAP college). The application focuses on motivating consistent study habits through a corporate-style interface with a modern dual-category checklist system.
 
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
 User requested: Change from time tracking to lesson completion checklist - 5 daily lessons instead of time tracking.
+User requested: Expand to 10 daily lessons divided into 5 B7Web course lessons and 5 FIAP college lessons.
 
 ## System Architecture
 
@@ -89,11 +90,20 @@ The application is designed for simple static hosting:
 - **Date**: July 15, 2025
 - **Migration**: Transformed from time tracking system to lesson completion checklist
 - **Features Added**:
-  - Interactive 5-lesson daily checklist
+  - Interactive 10-lesson daily checklist (5 B7Web + 5 FIAP)
+  - Dual-category system with color-coded sections
   - Visual progress bar with percentage completion
   - Lesson completion timestamps
   - Sound feedback for lesson completions
   - Weekly history showing lesson completion patterns
   - Motivational messaging focused on lesson completion
+
+- **Date**: July 16, 2025
+- **Enhancement**: Expanded from 5 to 10 daily lessons with dual categories
+- **Categories Added**:
+  - B7Web Course: 5 lessons with blue theming
+  - FIAP College: 5 lessons with purple theming
+  - Enhanced progress tracking with per-category breakdown
+  - Updated validation to require 10 lessons for day completion
 
 The system prioritizes user experience and motivation while maintaining simplicity in implementation and deployment.

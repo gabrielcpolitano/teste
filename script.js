@@ -6,14 +6,19 @@ class PontoDevSystem {
         this.currentUser = null;
         this.isDayStarted = false;
         this.lessons = {
-            lesson1: false,
-            lesson2: false,
-            lesson3: false,
-            lesson4: false,
-            lesson5: false
+            b7web1: false,
+            b7web2: false,
+            b7web3: false,
+            b7web4: false,
+            b7web5: false,
+            fiap1: false,
+            fiap2: false,
+            fiap3: false,
+            fiap4: false,
+            fiap5: false
         };
         this.motivationalMessages = [
-            "Hoje você precisa completar 5 aulas para manter seu progresso!",
+            "Hoje você precisa completar 10 aulas (5 B7Web + 5 FIAP) para manter seu progresso!",
             "Cada aula concluída é um passo para o seu sucesso profissional.",
             "A constância nos estudos é a chave para o crescimento na carreira.",
             "Mantenha o foco e complete todas as aulas de hoje.",
@@ -46,12 +51,15 @@ class PontoDevSystem {
         document.getElementById('logoutBtn').addEventListener('click', () => this.logout());
         
         // Lesson checkboxes
-        for (let i = 1; i <= 5; i++) {
-            const checkbox = document.getElementById(`lesson${i}`);
-            if (checkbox) {
-                checkbox.addEventListener('change', () => this.toggleLesson(i));
+        const lessonTypes = ['b7web', 'fiap'];
+        lessonTypes.forEach(type => {
+            for (let i = 1; i <= 5; i++) {
+                const checkbox = document.getElementById(`${type}${i}`);
+                if (checkbox) {
+                    checkbox.addEventListener('change', () => this.toggleLesson(`${type}${i}`));
+                }
             }
-        }
+        });
         
         // Absence justification
         document.getElementById('submitJustificationBtn').addEventListener('click', () => this.submitJustification());
@@ -147,19 +155,19 @@ class PontoDevSystem {
         if (statusElement) {
             if (completedCount === 0) {
                 statusElement.textContent = 'Dia iniciado';
-            } else if (completedCount === 5) {
+            } else if (completedCount === 10) {
                 statusElement.textContent = 'Dia concluído';
             } else {
-                statusElement.textContent = `${completedCount}/5 aulas`;
+                statusElement.textContent = `${completedCount}/10 aulas`;
             }
         }
     }
 
-    toggleLesson(lessonNumber) {
-        const checkbox = document.getElementById(`lesson${lessonNumber}`);
-        const timeElement = document.getElementById(`lesson${lessonNumber}-time`);
+    toggleLesson(lessonId) {
+        const checkbox = document.getElementById(lessonId);
+        const timeElement = document.getElementById(`${lessonId}-time`);
         
-        this.lessons[`lesson${lessonNumber}`] = checkbox.checked;
+        this.lessons[lessonId] = checkbox.checked;
         
         if (checkbox.checked) {
             const now = new Date();
@@ -172,7 +180,8 @@ class PontoDevSystem {
             timeElement.classList.add('text-green-400');
             timeElement.classList.remove('text-gray-400');
             
-            this.showMessage(`Aula ${lessonNumber} concluída! Parabéns!`, 'success');
+            const lessonName = lessonId.includes('b7web') ? 'B7Web' : 'FIAP';
+            this.showMessage(`Aula ${lessonName} concluída! Parabéns!`, 'success');
             this.playSound('success');
         } else {
             timeElement.textContent = 'Não iniciada';
@@ -187,18 +196,22 @@ class PontoDevSystem {
 
     updateLessonProgress() {
         const completedCount = Object.values(this.lessons).filter(Boolean).length;
-        const progressPercent = (completedCount / 5) * 100;
+        const progressPercent = (completedCount / 10) * 100;
+        
+        // Calculate B7Web and FIAP progress
+        const b7webCompleted = Object.keys(this.lessons).filter(key => key.startsWith('b7web') && this.lessons[key]).length;
+        const fiapCompleted = Object.keys(this.lessons).filter(key => key.startsWith('fiap') && this.lessons[key]).length;
         
         // Update completed lessons counter
         const completedElement = document.getElementById('completedLessons');
         if (completedElement) {
-            completedElement.textContent = `${completedCount}/5`;
+            completedElement.textContent = `${completedCount}/10`;
         }
         
         // Update progress text
         const progressTextElement = document.getElementById('progressText');
         if (progressTextElement) {
-            progressTextElement.textContent = `${completedCount} de 5 aulas concluídas`;
+            progressTextElement.textContent = `${completedCount} de 10 aulas concluídas (B7Web: ${b7webCompleted}/5, FIAP: ${fiapCompleted}/5)`;
         }
         
         // Update progress bar
@@ -208,8 +221,8 @@ class PontoDevSystem {
         }
         
         // Check if all lessons are complete
-        if (completedCount === 5) {
-            this.showMessage('Parabéns! Você concluiu todas as aulas de hoje!', 'success', 5000);
+        if (completedCount === 10) {
+            this.showMessage('Parabéns! Você concluiu todas as 10 aulas de hoje!', 'success', 5000);
             this.playSound('complete');
         }
     }
@@ -217,8 +230,8 @@ class PontoDevSystem {
     endWorkday() {
         const completedCount = Object.values(this.lessons).filter(Boolean).length;
         
-        if (completedCount < 5) {
-            if (!confirm(`Você só concluiu ${completedCount} de 5 aulas. Tem certeza que deseja finalizar o dia?`)) {
+        if (completedCount < 10) {
+            if (!confirm(`Você só concluiu ${completedCount} de 10 aulas. Tem certeza que deseja finalizar o dia?`)) {
                 return;
             }
         }
@@ -287,20 +300,24 @@ class PontoDevSystem {
             this.lessons = { ...todaysData.lessons };
             
             // Update checkboxes and times
-            for (let i = 1; i <= 5; i++) {
-                const checkbox = document.getElementById(`lesson${i}`);
-                const timeElement = document.getElementById(`lesson${i}-time`);
-                
-                if (checkbox) {
-                    checkbox.checked = this.lessons[`lesson${i}`] || false;
+            const lessonTypes = ['b7web', 'fiap'];
+            lessonTypes.forEach(type => {
+                for (let i = 1; i <= 5; i++) {
+                    const lessonId = `${type}${i}`;
+                    const checkbox = document.getElementById(lessonId);
+                    const timeElement = document.getElementById(`${lessonId}-time`);
                     
-                    if (checkbox.checked && todaysData.lessonTimes && todaysData.lessonTimes[`lesson${i}`]) {
-                        timeElement.textContent = `Concluída às ${todaysData.lessonTimes[`lesson${i}`]}`;
-                        timeElement.classList.add('text-green-400');
-                        timeElement.classList.remove('text-gray-400');
+                    if (checkbox) {
+                        checkbox.checked = this.lessons[lessonId] || false;
+                        
+                        if (checkbox.checked && todaysData.lessonTimes && todaysData.lessonTimes[lessonId]) {
+                            timeElement.textContent = `Concluída às ${todaysData.lessonTimes[lessonId]}`;
+                            timeElement.classList.add('text-green-400');
+                            timeElement.classList.remove('text-gray-400');
+                        }
                     }
                 }
-            }
+            });
         }
         
         this.updateLessonProgress();
@@ -327,12 +344,12 @@ class PontoDevSystem {
             let statusClass = 'error';
             let statusText = 'Não estudou';
             
-            if (completedCount === 5) {
+            if (completedCount === 10) {
                 statusClass = 'success';
-                statusText = '5/5 aulas';
+                statusText = '10/10 aulas';
             } else if (completedCount > 0) {
                 statusClass = 'warning';
-                statusText = `${completedCount}/5 aulas`;
+                statusText = `${completedCount}/10 aulas`;
             } else if (dateData && dateData.justification) {
                 statusClass = 'warning';
                 statusText = 'Justificado';
@@ -377,14 +394,18 @@ class PontoDevSystem {
         const dateKey = this.getDateKey(today);
         
         const lessonTimes = {};
-        for (let i = 1; i <= 5; i++) {
-            if (this.lessons[`lesson${i}`]) {
-                const timeElement = document.getElementById(`lesson${i}-time`);
-                if (timeElement && timeElement.textContent.includes('Concluída às')) {
-                    lessonTimes[`lesson${i}`] = timeElement.textContent.replace('Concluída às ', '');
+        const lessonTypes = ['b7web', 'fiap'];
+        lessonTypes.forEach(type => {
+            for (let i = 1; i <= 5; i++) {
+                const lessonId = `${type}${i}`;
+                if (this.lessons[lessonId]) {
+                    const timeElement = document.getElementById(`${lessonId}-time`);
+                    if (timeElement && timeElement.textContent.includes('Concluída às')) {
+                        lessonTimes[lessonId] = timeElement.textContent.replace('Concluída às ', '');
+                    }
                 }
             }
-        }
+        });
         
         const data = {
             lessons: this.lessons,
@@ -466,11 +487,16 @@ class PontoDevSystem {
         this.currentUser = null;
         this.isDayStarted = false;
         this.lessons = {
-            lesson1: false,
-            lesson2: false,
-            lesson3: false,
-            lesson4: false,
-            lesson5: false
+            b7web1: false,
+            b7web2: false,
+            b7web3: false,
+            b7web4: false,
+            b7web5: false,
+            fiap1: false,
+            fiap2: false,
+            fiap3: false,
+            fiap4: false,
+            fiap5: false
         };
         
         // Show login screen
