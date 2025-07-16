@@ -143,13 +143,10 @@ class PontoDevSystem {
         const statusElement = document.getElementById('dayStatus');
         
         if (statusElement) {
-            if (completedCount === 0) {
+            if (completedCount < 10) {
                 statusElement.textContent = 'Dia iniciado';
-            } else if (completedCount === 10) {
-                statusElement.textContent = 'Dia concluído';
             } else {
-                statusElement.textContent = `${completedCount}/10 aulas`;
-            }
+                statusElement.textContent = 'Dia concluído';
         }
     }
 
