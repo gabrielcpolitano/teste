@@ -52,7 +52,7 @@ $projects = [
         'date' => '2025',
         'image' => './project2.png',
         'image_alt' => 'Screenshot da Loja Virtual E-commerce',
-        'ver_detalhes' => 'https://www.sandraboleira.com/'
+        'ver_detalhes' => 'https://raw.githubusercontent.com/gabrielcpolitano/teste/refs/heads/main/api/project2.png'
     ],
     [
         'title' => 'Landing Page Corporativa',
@@ -132,7 +132,7 @@ function getProjectAge() {
     <meta name="description" content="Gabriel Politano - Desenvolvedor e Estudante de Sistemas de Informação na FIAP. Especialista em PHP, JavaScript, HTML, CSS e WordPress.">
     <meta name="keywords" content="Gabriel Politano, desenvolvedor, PHP, JavaScript, HTML, CSS, WordPress, FIAP, Sistemas de Informação">
     <title>Gabriel Politano - Desenvolvedor Web</title>
-    <link rel="icon" type="image/svg+xml" href="./api/favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="https://raw.githubusercontent.com/gabrielcpolitano/teste/6de2b2a5c10ff1e585ac54918588b1143140c83e/api/favicon.svg">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
