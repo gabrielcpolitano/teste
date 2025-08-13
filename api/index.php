@@ -12,7 +12,7 @@ $portfolio_data = [
     'email' => 'gabriel.cpolitano@gmail.com',
     'phone' => '+55 (17) 99649-0503',
     'location' => 'São Paulo, SP',
-    'hero_image' => './hero.jpg', // URL da imagem do hero
+    'hero_image' => './api/hero.jpg', // URL da imagem do hero
     'hero_image_alt' => 'Foto de Gabriel Politano - Desenvolvedor Web'
 ];
 
@@ -40,7 +40,7 @@ $projects = [
         'technologies' => ['HTML', 'CSS3', 'JavaScript', 'Bootstrap'],
         'status' => 'Concluído',
         'date' => '2024',
-        'image' => './project1.png',
+        'image' => './api/project1.png',
         'image_alt' => 'Screenshot do Sistema de Vendas de Tickets',
         'ver_detalhes' => 'https://elistickets.com/'
     ],
@@ -50,7 +50,7 @@ $projects = [
         'technologies' => ['HTML', 'CSS3', 'Tailwind', 'JavaScript'],
         'status' => 'Concluído',
         'date' => '2025',
-        'image' => './project2.png',
+        'image' => './api/project2.png',
         'image_alt' => 'Screenshot da Loja Virtual E-commerce',
         'ver_detalhes' => 'https://www.sandraboleira.com/'
     ],
@@ -60,7 +60,7 @@ $projects = [
         'technologies' => ['HTML5', 'CSS3', 'JavaScript'],
         'status' => 'Concluído',
         'date' => '2025',
-        'image' => './project3.png',
+        'image' => './api/project3.png',
         'image_alt' => 'Screenshot da Landing Page Corporativa',
         'ver_detalhes' => 'https://2-gb-burger.vercel.app/'
     ],
@@ -132,6 +132,7 @@ function getProjectAge() {
     <meta name="description" content="Gabriel Politano - Desenvolvedor e Estudante de Sistemas de Informação na FIAP. Especialista em PHP, JavaScript, HTML, CSS e WordPress.">
     <meta name="keywords" content="Gabriel Politano, desenvolvedor, PHP, JavaScript, HTML, CSS, WordPress, FIAP, Sistemas de Informação">
     <title>Gabriel Politano - Desenvolvedor Web</title>
+    <link rel="icon" type="image/svg+xml" href="./api/favicon.svg">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
