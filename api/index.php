@@ -50,9 +50,9 @@ $projects = [
         'technologies' => ['HTML', 'CSS3', 'Tailwind', 'JavaScript'],
         'status' => 'Concluído',
         'date' => '2025',
-        'image' => './project2.png',
+        'image' => 'https://raw.githubusercontent.com/gabrielcpolitano/teste/refs/heads/main/api/project2.png',
         'image_alt' => 'Screenshot da Loja Virtual E-commerce',
-        'ver_detalhes' => 'https://raw.githubusercontent.com/gabrielcpolitano/teste/refs/heads/main/api/project2.png'
+        'ver_detalhes' => 'https://sandraboleira.com/'
     ],
     [
         'title' => 'Landing Page Corporativa',
