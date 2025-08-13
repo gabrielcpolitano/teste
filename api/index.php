@@ -140,7 +140,7 @@ function getProjectAge() {
                 extend: {
                     colors: {
                         primary: '#3B82F6',
-                        secondary: '#1E40AF',
+                        secondary: '#3B82F6',
                         accent: '#3B82F6',
                         dark: '#111827',
                         light: '#F9FAFB'
