@@ -1,4 +1,5 @@
 <?php
+phpinfo();
 // Configurações dinâmicas do site
 date_default_timezone_set('America/Sao_Paulo');
 
