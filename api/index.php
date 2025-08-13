@@ -20,15 +20,15 @@ $portfolio_data = [
 $skills = [
     'languages' => [
         ['name' => 'PHP', 'level' => 90, 'color' => 'primary'],
-        ['name' => 'JavaScript', 'level' => 85, 'color' => 'accent'],
-        ['name' => 'HTML5', 'level' => 95, 'color' => 'secondary'],
+        ['name' => 'JavaScript', 'level' => 85, 'color' => 'primary'],
+        ['name' => 'HTML5', 'level' => 95, 'color' => 'primary'],
         ['name' => 'CSS3', 'level' => 90, 'color' => 'primary']
     ],
     'tools' => [
-        ['name' => 'Tailwind CSS', 'level' => 88, 'color' => 'accent'],
-        ['name' => 'WordPress', 'level' => 82, 'color' => 'secondary'],
+        ['name' => 'Tailwind CSS', 'level' => 88, 'color' => 'primary'],
+        ['name' => 'WordPress', 'level' => 82, 'color' => 'primary'],
         ['name' => 'MySQL', 'level' => 80, 'color' => 'primary'],
-        ['name' => 'Git', 'level' => 85, 'color' => 'accent']
+        ['name' => 'Git', 'level' => 85, 'color' => 'primary']
     ]
 ];
 
@@ -140,8 +140,8 @@ function getProjectAge() {
                 extend: {
                     colors: {
                         primary: '#3B82F6',
-                        secondary: '#3B82F6',
-                        accent: '#3B82F6',
+                        secondary: '#1E40AF',
+                        accent: '#F59E0B',
                         dark: '#111827',
                         light: '#F9FAFB'
                     }
