@@ -40,7 +40,7 @@ $projects = [
         'technologies' => ['HTML', 'CSS3', 'JavaScript', 'Bootstrap'],
         'status' => 'Concluído',
         'date' => '2024',
-        'image' => './api/project1.png',
+        'image' => 'https://raw.githubusercontent.com/gabrielcpolitano/teste/refs/heads/main/api/project1.png',
         'image_alt' => 'Screenshot do Sistema de Vendas de Tickets',
         'ver_detalhes' => 'https://elistickets.com/'
     ],
@@ -50,7 +50,7 @@ $projects = [
         'technologies' => ['HTML', 'CSS3', 'Tailwind', 'JavaScript'],
         'status' => 'Concluído',
         'date' => '2025',
-        'image' => './api/project2.png',
+        'image' => '/api/project2.png',
         'image_alt' => 'Screenshot da Loja Virtual E-commerce',
         'ver_detalhes' => 'https://www.sandraboleira.com/'
     ],
@@ -60,7 +60,7 @@ $projects = [
         'technologies' => ['HTML5', 'CSS3', 'JavaScript'],
         'status' => 'Concluído',
         'date' => '2025',
-        'image' => './api/project3.png',
+        'image' => '/api/project3.png',
         'image_alt' => 'Screenshot da Landing Page Corporativa',
         'ver_detalhes' => 'https://2-gb-burger.vercel.app/'
     ],
