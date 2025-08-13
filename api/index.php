@@ -12,7 +12,7 @@ $portfolio_data = [
     'email' => 'gabriel.cpolitano@gmail.com',
     'phone' => '+55 (17) 99649-0503',
     'location' => 'São Paulo, SP',
-    'hero_image' => './api/hero.jpg', // URL da imagem do hero
+    'hero_image' => 'https://raw.githubusercontent.com/gabrielcpolitano/teste/refs/heads/main/api/hero.jpg', // URL da imagem do hero
     'hero_image_alt' => 'Foto de Gabriel Politano - Desenvolvedor Web'
 ];
 
